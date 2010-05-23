@@ -98,7 +98,7 @@ class Ulteamee_Registry_Registry {
      * @return boolean
      */
     public function has($name) {
-        return (array_keys_exists($name));
+        return array_key_exists($name);
     }
 
 
