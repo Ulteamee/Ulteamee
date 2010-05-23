@@ -8,7 +8,7 @@
  *
  * @package     Ulteamee
  * @subpackage  Registry
- * @author      6dney <6dney@ulteamee-project.org>
+ * @author      el.iterator <el.iterator@ulteamee-project.org>
  * @copyright   Copyright (c) 2010 Ulteamee project
  * @license		http://ulteamee.com/user_guide/license.html
  * @link		http://ulteamee.com
