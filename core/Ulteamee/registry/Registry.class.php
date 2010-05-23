@@ -21,7 +21,7 @@
 /**
  * Ulteamee_Registry_Registry
  *
- * @author 6dney <6dney@ulteamee-project.org>
+ * @author el.iterator <el.iterator@ulteamee-project.org>
  */
 class Ulteamee_Registry_Registry {
     /**
