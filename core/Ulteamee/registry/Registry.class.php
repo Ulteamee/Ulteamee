@@ -9,9 +9,9 @@
  * @package     Ulteamee
  * @subpackage  Registry
  * @author      el.iterator <el.iterator@ulteamee-project.org>
- * @copyright   Copyright (c) 2010 Ulteamee project
- * @license		http://ulteamee.com/user_guide/license.html
- * @link		http://ulteamee.com
+ * @copyright	Copyright (c) 2010 Ulteamee project
+ * @license		http://www.ulteamee-project.org/user_guide/license.html
+ * @link		http://www.ulteamee-project.org
  * @since		Version 0.1b
  *
 */
