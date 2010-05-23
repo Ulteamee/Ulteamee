@@ -126,7 +126,6 @@ class Ulteamee_Registry_Registry {
      * Erases all stored variables
      */
     public function clear() {
-        unset(self::$_instance->_variables);
         self::$_instance->_variables = array();
     }
 }
