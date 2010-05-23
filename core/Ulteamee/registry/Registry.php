@@ -58,7 +58,6 @@ class Ulteamee_Registry_Registry {
 		if (null === self::$_instance) {
 			self::$_instance = new self ( );
 		}
-		
 		return self::$_instance;
 	}
 	
@@ -96,7 +95,7 @@ class Ulteamee_Registry_Registry {
 		if (array_key_exists ( $name )) {
 			return $name;
 		}
-		return false;	
+		return false;
 	}
 	
 	/**
@@ -105,7 +104,10 @@ class Ulteamee_Registry_Registry {
 	 * @return array
 	 */
 	public function get_variables() {
-		return self::$_instance->_variables;
+		if (self::$_instance->_variables) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -114,7 +116,9 @@ class Ulteamee_Registry_Registry {
 	 * @param string $name The variable's name to delete
 	 */
 	public function delete($name) {
-		unset ( self::$_instance->_variables [$name] );
+		if (self::$_instance->_variables [$name]) {
+			unset ( self::$_instance->_variables [$name] );
+		}
 	}
 	
 	/**
