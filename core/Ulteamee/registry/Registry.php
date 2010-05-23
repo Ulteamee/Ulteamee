@@ -1,6 +1,6 @@
 <?php
-if (! defined ( 'BASE_PATH' ))
-	exit ( 'No direct script access allowed' );
+if ( ! defined('BASE_PATH'))
+	exit('No direct script access allowed');
 /**
  * This file is part of the Ulteamee project package.
  *
@@ -14,10 +14,10 @@ if (! defined ( 'BASE_PATH' ))
  * @copyright	Copyright (c) 2010 Ulteamee project
  * @license		http://www.ulteamee-project.org/user_guide/license.html
  * @link		http://www.ulteamee-project.org
- * @version		$Id: $ 
+ * @version		$Id: $
  */
 
-/** 
+/**
  * @package     Ulteamee
  * @subpackage  Ulteamee_Registry
  * @author      el.iterator <el.iterator@ulteamee-project.org>
@@ -39,12 +39,16 @@ class Ulteamee_Registry_Registry {
 	
 	/**
 	 * instantiate this class is not allowed
+	 *
+	 * @return void
 	 */
 	private function __construct() {
 	}
 	
 	/**
 	 * Cloning is not allowed
+	 *
+	 * @return void
 	 */
 	private function __clone() {
 	}
@@ -56,7 +60,7 @@ class Ulteamee_Registry_Registry {
 	 */
 	public static function getInstance() {
 		if (null === self::$_instance) {
-			self::$_instance = new self ( );
+			self::$_instance = new self();
 		}
 		return self::$_instance;
 	}
@@ -68,7 +72,7 @@ class Ulteamee_Registry_Registry {
 	 * @param mixed $value The value to store
 	 */
 	public function set($name, $value) {
-		self::$_instance->_variables [$name] = $value;
+		self::$_instance->_variables[$name] = $value;
 	}
 	
 	/**
@@ -78,8 +82,7 @@ class Ulteamee_Registry_Registry {
 	 * @return mixed
 	 */
 	public function get($name, $default = null) {
-		
-		if (array_key_exists ( $name, self::$_instance->_variables )) {
+		if (array_key_exists($name, self::$_instance->_variables)) {
 			$default = self::$_instance->_variables;
 		}
 		return $default;
@@ -92,7 +95,7 @@ class Ulteamee_Registry_Registry {
 	 * @return boolean
 	 */
 	public function has($name) {
-		if (array_key_exists ( $name )) {
+		if (array_key_exists($name)) {
 			return $name;
 		}
 		return false;
@@ -116,8 +119,8 @@ class Ulteamee_Registry_Registry {
 	 * @param string $name The variable's name to delete
 	 */
 	public function delete($name) {
-		if (self::$_instance->_variables [$name]) {
-			unset ( self::$_instance->_variables [$name] );
+		if (self::$_instance->_variables[$name]) {
+			unset(self::$_instance->_variables[$name]);
 		}
 	}
 	
