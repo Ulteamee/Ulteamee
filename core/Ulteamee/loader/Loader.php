@@ -7,9 +7,23 @@ if ( ! defined('BASE_PATH'))
  * Ulteamee
  *
  * An open source Clan Management System for PHP 5.2+ and newer
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  * @package     Ulteamee
- * @subpackage  Ulteamee_Autoload
+ * @subpackage  Ulteamee_Loader
  * @author      el.iterator <el.iterator@ulteamee-project.org>
  * @copyright	Copyright (c) 2010 Ulteamee project
  * @license		http://www.ulteamee-project.org/user_guide/license.html
@@ -19,7 +33,7 @@ if ( ! defined('BASE_PATH'))
 
 /**
  * @package     Ulteamee
- * @subpackage  Ulteamee_Autoload
+ * @subpackage  Ulteamee_Loader
  * @author      el.iterator <el.iterator@ulteamee-project.org>
  * @copyright	Copyright (c) 2010 Ulteamee project
  * @license		http://www.ulteamee-project.org/user_guide/license.html
@@ -32,50 +46,37 @@ class Ulteamee_Loader_Loader {
 	private static $_instance = null;
 	
 	/**
-	 * Instantiate this class is not allowed
+	 * SPL configs and register
 	 *
 	 * @return void
 	 */
-	private function __construct() {
-		// nully existing autoload
+	public static function register() {
+		// SPL nullify existing autoload
 		spl_autoload_register(null, false);
 		
-		// allowed extensions to autoload
+		// SPL allowed extensions to autoload
 		spl_autoload_extensions('.php, .class.php');
+		
+		// SPL autoload register
+		spl_autoload_register(array (new self(), 'autoload'));
 	}
 	
 	/**
-	 * Cloning is not allowed
-	 *
-	 * @return void
-	 */
-	private function __clone() {
-	}
-	
-	/**
-	 * Singleton method used to access the object
-	 *
-	 * @return object Object of the class
-	 */
-	public static function getInstance() {
-		if (null === self::$_instance) {
-			self::$_instance = new self();
-		}
-		return self::$_instance;
-	}
-	
-	/**
-	 * autoload method
+	 * autoloads class
 	 *
 	 * @param string $class
 	 * @return boolean
 	 */
-	private function __autoload($class) {
+	public static function autoload($class) {
+		if (0 !== strpos($class, 'Ulteamee')) {
+			return false;
+		}
+		
 		if ( ! isset($class)) {
 			return false;
 		}
 		
-		$classPath = CORE_PATH . str_replace('_', '/', $class) . 'class.php';
+		$classPath = CORE_PATH . DS . str_replace('_', '/', $class) . '.php';
 		
 		// is class path exist?
 		if ( ! file_exists($classPath)) {
