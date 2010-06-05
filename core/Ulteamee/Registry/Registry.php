@@ -1,13 +1,13 @@
 <?php
-if ( ! defined('BASE_PATH'))
-	exit('No direct script access allowed');
+if (! defined ( 'BASE_PATH' ))
+exit ( 'No direct script access allowed' );
 /**
  * This file is part of the Ulteamee project package.
  *
  * Ulteamee
  *
- * An open source Clan Management System for PHP 5.2+ and newer
- * 
+ * An open source Content Management System for PHP 5.2+ and newer
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -30,7 +30,6 @@ if ( ! defined('BASE_PATH'))
  * @link		http://www.ulteamee-project.org
  * @version		$Id: $
  */
-
 /**
  * @package     Ulteamee
  * @subpackage  Ulteamee_Registry
@@ -44,13 +43,14 @@ class Ulteamee_Registry_Registry {
 	 * @var array
 	 */
 	private static $_variables = array ();
-	
+
 	/**
 	 * Instance of the class
 	 * @var void
 	 */
+
 	private static $_instance = null;
-	
+
 	/**
 	 * instantiate this class is not allowed
 	 *
@@ -58,7 +58,7 @@ class Ulteamee_Registry_Registry {
 	 */
 	private function __construct() {
 	}
-	
+
 	/**
 	 * Cloning is not allowed
 	 *
@@ -66,7 +66,7 @@ class Ulteamee_Registry_Registry {
 	 */
 	private function __clone() {
 	}
-	
+
 	/**
 	 * Singleton method used to access the object
 	 *
@@ -74,47 +74,47 @@ class Ulteamee_Registry_Registry {
 	 */
 	public static function getInstance() {
 		if (null === self::$_instance) {
-			self::$_instance = new self();
+			self::$_instance = new self ( );
 		}
 		return self::$_instance;
 	}
-	
+
 	/**
 	 * Stores a new variable
 	 *
 	 * @param string $name The name of the variable
 	 * @param mixed $value The value to store
 	 */
-	public function set($name, $value) {
-		self::$_instance->_variables[$name] = $value;
+	public static function set($name, $value) {
+		self::$_instance->_variables [$name] = $value;
 	}
-	
+
 	/**
 	 * Retrieves a variable's value
 	 *
 	 * @param string $name The name of the variable
 	 * @return mixed
 	 */
-	public function get($name, $default = null) {
-		if (array_key_exists($name, self::$_instance->_variables)) {
-			$default = self::$_instance->_variables[$name];
+	public static function get($name, $default = null) {
+		if (array_key_exists ( $name, self::$_instance->_variables )) {
+			$default = self::$_instance->_variables [$name];
 		}
 		return $default;
 	}
-	
+
 	/**
 	 * Checks if a variable exists
 	 *
 	 * @param string $name The name of the variable
 	 * @return boolean
 	 */
-	public function has($name) {
-		if (array_key_exists($name)) {
-			return $name;
+	public static function has($name) {
+		if (array_key_exists ( $name, self::$_instance->_variables )) {
+			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Retrieves all stored variables
 	 *
@@ -126,18 +126,18 @@ class Ulteamee_Registry_Registry {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Deletes a variable
 	 *
 	 * @param string $name The variable's name to delete
 	 */
 	public function delete($name) {
-		if (self::$_instance->_variables[$name]) {
-			unset(self::$_instance->_variables[$name]);
+		if (self::$_instance->_variables [$name]) {
+			unset ( self::$_instance->_variables [$name] );
 		}
 	}
-	
+
 	/**
 	 * Erases all stored variables
 	 */
