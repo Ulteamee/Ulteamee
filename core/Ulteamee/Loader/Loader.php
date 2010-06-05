@@ -1,13 +1,13 @@
 <?php
-if ( ! defined('BASE_PATH'))
+if (!defined('BASE_PATH'))
 	exit('No direct script access allowed');
 /**
  * This file is part of the Ulteamee project package.
  *
  * Ulteamee
  *
- * An open source Clan Management System for PHP 5.2+ and newer
- * 
+ * An open source Content Management System for PHP 5.2+ and newer
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -30,7 +30,6 @@ if ( ! defined('BASE_PATH'))
  * @link		http://www.ulteamee-project.org
  * @version		$Id: $
  */
-
 /**
  * @package     Ulteamee
  * @subpackage  Ulteamee_Loader
@@ -39,12 +38,6 @@ if ( ! defined('BASE_PATH'))
  * @license		http://www.ulteamee-project.org/user_guide/license.html
  */
 class Ulteamee_Loader_Loader {
-	/**
-	 * Instance of the class
-	 * @var void
-	 */
-	private static $_instance = null;
-	
 	/**
 	 * SPL configs and register
 	 *
@@ -62,7 +55,7 @@ class Ulteamee_Loader_Loader {
 	}
 	
 	/**
-	 * autoloads class
+	 * Autoloads class
 	 *
 	 * @param string $class
 	 * @return boolean
@@ -72,21 +65,21 @@ class Ulteamee_Loader_Loader {
 			return false;
 		}
 		
-		if ( ! isset($class)) {
+		if (!isset($class)) {
 			return false;
 		}
 		
 		$classPath = CORE_PATH . DS . str_replace('_', '/', $class) . '.php';
 		
 		// is class path exist?
-		if ( ! file_exists($classPath)) {
+		if (!file_exists($classPath)) {
 			return false;
 		}
 		
 		require $classPath;
 		
 		// Check if class/interface has already been declared
-		if ( ! class_exists($class) &&  ! interface_exists($class)) {
+		if (!class_exists($class) && !interface_exists($class)) {
 			return false;
 		}
 		
