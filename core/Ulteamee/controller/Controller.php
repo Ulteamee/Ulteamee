@@ -28,7 +28,7 @@ if (!defined('BASE_PATH'))
  * @copyright	Copyright (c) 2010 Ulteamee project
  * @license		http://www.ulteamee-project.org/user_guide/license.html
  * @link		http://www.ulteamee-project.org
- * @version		$Id: $
+ * @version		$Id:$
  */
 /**
  * @package     Ulteamee
