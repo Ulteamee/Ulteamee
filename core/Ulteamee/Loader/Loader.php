@@ -37,7 +37,7 @@ if (!defined('BASE_PATH'))
  * @copyright	Copyright (c) 2010 Ulteamee project
  * @license		http://www.ulteamee-project.org/user_guide/license.html
  */
-class Ulteamee_Loader_Loader {
+class Ulteamee_Loader {
 	/**
 	 * SPL configs and register
 	 *
@@ -69,7 +69,8 @@ class Ulteamee_Loader_Loader {
 			return false;
 		}
 		
-		$classPath = CORE_PATH . DS . str_replace('_', '/', $class) . '.php';
+		list($dir, $file) = explode('_', $class);
+		$classPath = CORE_PATH . DS .  $dir . '/' . $file. '/' . $file .  '.php';	
 		
 		// is class path exist?
 		if (!file_exists($classPath)) {
