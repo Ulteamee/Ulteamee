@@ -37,9 +37,7 @@ if (!defined('BASE_PATH'))
  * @copyright	Copyright (c) 2010 Ulteamee project
  * @license		http://www.ulteamee-project.org/user_guide/license.html
  */
-define('APPS_PATH', BASE_PATH . '/apps');
-
-class Ulteamee_Dispatcher_Dispatcher {
+class Ulteamee_Dispatcher {
 	/**
 	 *
 	 * @var unknown_type
@@ -63,6 +61,20 @@ class Ulteamee_Dispatcher_Dispatcher {
 	 * @var unknown_type
 	 */
 	CONST DEFAULT_404_ACTION = '404';
+	
+	/**
+	 * 
+	 * @var unknown_type
+	 */
+	CONST CONTROLLER_CLASS_NOT_FOUND = 'Unable to find class "%s" in file "%s"';
+	
+	/**
+	 * 
+	 * @var unknown_type
+	 */
+	CONST CONTROLLER_METHOD_NOT_FOUND = 'Unable to find method (action) "%s" in file "%s"';
+	
+	protected $_request;
 	
 	/**
 	 *
@@ -97,19 +109,7 @@ class Ulteamee_Dispatcher_Dispatcher {
 	 *
 	 * @var unknown_type
 	 */
-	protected $_request;
-	
-	/**
-	 *
-	 * @var unknown_type
-	 */
 	protected $_application;
-	
-	/**
-	 *
-	 * @var unknown_type
-	 */
-	protected static $_registry;
 	
 	/**
 	 *
@@ -129,8 +129,8 @@ class Ulteamee_Dispatcher_Dispatcher {
 	 * @param string $uri
 	 */
 	public function __construct() {
-		self::$_registry = Ulteamee_Registry_Registry::getInstance();
-		$this->_uri = $_SERVER['REQUEST_URI'];
+		$this_request = new Ulteamee_Request();
+		$this->_uri = $this_request->getUri();
 	}
 	
 	/**
@@ -139,16 +139,15 @@ class Ulteamee_Dispatcher_Dispatcher {
 	 * @return unknown_type
 	 */
 	public function init($application = null) {
-		echo '<pre>';
+		
 		if (null === $application) {
-			throw new Exception('No application (frontend, backend) defined');
+			throw new Exception('No application (frontend, backend, test) defined');
 		}
 		
 		$this->_application = $application;
 		$params = array ();
-		$regex = '/[^a-zA-Z0-9]+/i';
 		$routes = parse_ini_file(APPS_PATH . '/' . $application . '/config/routes.ini', true);
-		self::$_registry->set('apps.' . $application . '.routes', $routes);
+		Ulteamee_Registry::set('apps.' . $application . '.routes', $routes);
 		$module = self::DEFAULT_MODULE;
 		$action = self::DEFAULT_ACTION;
 		
@@ -180,7 +179,7 @@ class Ulteamee_Dispatcher_Dispatcher {
 					$parameters = array_slice($this->_segments, 2, count($this->_segments));
 					
 					// clean
-					$parameters = preg_replace($regex, "", array_values($parameters));
+					//$parameters = preg_replace($regex, "", array_values($parameters));
 					$cntParameters = count($parameters);
 					
 					for ($i = 0; $i < $cntParameters; $i++) {
@@ -193,10 +192,6 @@ class Ulteamee_Dispatcher_Dispatcher {
 		}
 		
 		$requirements = $matched = array ();
-		
-		//print_r($routes);
-		print $this->_uri . "<br>";
-		print_r($routes);
 		
 		foreach ($routes as $route => $config) {
 			if (isset($config['requirements']) && !empty($config['requirements'])) {
@@ -224,15 +219,14 @@ class Ulteamee_Dispatcher_Dispatcher {
 		unset($config);
 		unset($routes);
 		
-		$$module = (isset($module) && !empty($module)) ? preg_replace($regex, "", $module) : null;
-		$action = (isset($action) && !empty($action)) ? preg_replace($regex, "", $action) : null;
+		$module = (isset($module) && !empty($module)) ? $module : null;
+		$action = (isset($action) && !empty($action)) ? $action : null;
 		$parameters = (isset($params) && !empty($params)) ? $params : null;
-		
-		print 'BEFORE module: ' . $module . ' && action: ' . $action . '<br>';
-		
 		
 		// no module exists
 		// use default module & action
+		$class = $module . 'Actions';
+		
 		if (null === $module) {
 			$module = self::DEFAULT_MODULE;
 			
@@ -242,49 +236,45 @@ class Ulteamee_Dispatcher_Dispatcher {
 				$action = self::DEFAULT_404_ACTION;
 			}
 			
-			$class = $module . 'Actions';
-			$fileToInclude = CORE_PATH . '/controller/modules/' . $module . '/' . $class . '.class.php';
-			
+			$fileToInclude = CORE_PATH . '/controller/modules/' . $module . '/' . $class . '.php';
+		
 		} else {
-			$class = $module . 'Actions';
 			if (null === $action) {
 				$action = self::DEFAULT_ACTION;
 			}
 			
-			$fileToInclude = APPS_PATH . '/' . $application . '/modules/' . $module . '/' . $class . '.class.php';
+			$fileToInclude = APPS_PATH . '/' . $application . '/modules/' . $module . '/' . $class . '.php';
 		}
 		
-		print $fileToInclude.'<br>';
-		
 		// checks if $fileToInclude exists and readable otherwise use our default module class and 404 action
-		if (!is_file($fileToInclude) or !is_readable($fileToInclude)) {
+		if (!is_file($fileToInclude) && !is_readable($fileToInclude)) {
 			$module = self::DEFAULT_MODULE;
 			$action = self::DEFAULT_404_ACTION;
 			$class = $module . 'Actions';
-			$fileToInclude = CORE_PATH . '/controller/modules/' . $module . '/' . $class . '.class.php';
+			$fileToInclude = ULTEAMEE_CORE_PATH . '/controller/modules/' . $module . '/' . $class . '.php';
 		}
 		
-		print 'AFTER module: ' . $module . ' && action: ' . $action . '<br>';
-		
+		Ulteamee_Registry::set('app', $application);
+		Ulteamee_Registry::set('app.' . $application . '.module', $module);
+		Ulteamee_Registry::set('app.' . $application . '.action', $action);
+		Ulteamee_Registry::set('app.' . $application . '.parameters', $parameters);
 		
 		// include module class file
-        require_once $fileToInclude;
-
-        // instantiate controller class
-        if(!class_exists($class) && !interface_exists($class)) {
-            throw new Exception(sprintf(__NKO_FRONT_CONTROLLER_CLASS_NOT_FOUND__, $class, $fileToInclude));
-        } else { 
-            $this->_action_controller =& new $class;
-        }
+		require_once $fileToInclude;
 		
+		// check and instantiate controller class
+		if (!class_exists($class) && !interface_exists($class)) {
+			throw new Ulteamee_Exception(sprintf(self::CONTROLLER_CLASS_NOT_FOUND, $class, $fileToInclude));
+		}
+		$moduleClass = & new $class();
 		
-		self::$_registry->set('apps.' . $application . '.module', $module);
-		self::$_registry->set('apps.' . $application . '.action', $action);
-		self::$_registry->set('apps.' . $application . '.parameters', $parameters);
-		//echo '<pre>';
-		//print count($this->_segments) . ' ' . $this->_module . ' ' . $this->_action . "<br>";
-		//print_r($this);
-		exit();
+		$moduleClass->execute();
+		
+		/*
+		 * if (!method_exists($moduleClass, $action)) {
+			throw new Ulteamee_Exception(sprintf(self::CONTROLLER_METHOD_NOT_FOUND, $action, $fileToInclude));
+		}		
+		 */	
 	}
 	
 	/**
@@ -321,86 +311,5 @@ class Ulteamee_Dispatcher_Dispatcher {
 			}
 		}
 		return $formattedParamsArray;
-	}
-	
-	function invoke($application, $config) {
-		if (!isset($config['controller'])) {
-			trigger_error("No controller configured for the application " . $application, E_USER_ERROR);
-			exit();
-		}
-		echo '<pre>';
-		print_r($config);
-		$this->_params($config, $this->_getValues($application));
-		/*require_once (CONTROLLERS . $config['controller'] . CLASS_FILE);
-		 $class = basename($config['controller']);
-		 $controller = &new $class();
-
-		 if (is_subclass_of($controller, 'Controller')) {
-		 switch ($_SERVER['REQUEST_METHOD']) {
-		 case 'GET':
-		 $controller->doGet();
-		 break;
-		 case 'POST':
-		 $controller->doPost();
-		 break;
-		 default:
-		 trigger_error('Unhandled request method: ' . $_SERVER['REQUEST_METHOD'], E_USER_ERROR);
-		 }
-		 }
-		 */
-	}
-	
-	/**
-	 * Parse the URI
-	 *
-	 * @param string $uri
-	 *
-	 * @return boolean
-	 */
-	protected function parseUri($uri) {
-		// Strip whitespace (or other characters) from the beginning and end of a string
-		$this->uri = trim($this->uri, '/');
-		// explode all URI slashes if is not empty
-		$uriArray = !empty($this->uri) ? explode('/', $this->uri) : '';
-		// evaluate each $uriArray values
-		$this->segments = array_filter($uriArray);
-		// construct module, action & parameters
-		switch (count($this->segments)) {
-			// we may not have this case
-			case 0 :
-				break;
-			case 1 :
-				// no module & action, use default module & action
-				$this->request['module'] = $this->module;
-				$this->request['action'] = $this->action;
-				break;
-			case 2 :
-				// we have a module, but no action
-				$this->request['module'] = $this->segments[1];
-				$this->request['action'] = $this->action;
-				break;
-			case 3 :
-				// we have a module and an action
-				$this->request['module'] = $this->segments[1];
-				$this->request['action'] = $this->segments[2];
-				break;
-			default :
-				$this->request['module'] = $this->segments[1];
-				$this->request['action'] = $this->segments[2];
-				// build parameters
-				$parameters = array_slice($this->segments, 3, count($this->segments));
-				$parameters = array_values($parameters);
-				$cntParameters = count($parameters);
-				for ($i = 0; $i < $cntParameters; $i++) {
-					if (!empty($parameters[$i])) {
-						$this->request['parameters'][$parameters[$i]] = (!empty($parameters[$i + 1])) ? $parameters[$i + 1] : null;
-						array_shift($parameters);
-					}
-				}
-				break;
-		}
-		Ulteamee_Registry_Registry::set('module', $this->request['module']);
-		Ulteamee_Registry_Registry::set('action', $this->request['action']);
-		return false;
 	}
 }
